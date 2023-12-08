@@ -1,9 +1,10 @@
-# A template for a data science project using python
+# An example LUCAS segmentation model
 
-This template is inspired by the 
-[cookiecutter data science template](https://drivendata.github.io/cookiecutter-data-science/).
 
-## Setting up the repository
+
+
+
+## Setting up your python environment
 
 Run the following code from the terminal to set up your repository and conda environment. 
 Make sure that [miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html) 
@@ -101,40 +102,4 @@ and all your collaborators will be.
 Data should be kept outside of your repository, whenever it is too big to fit into GitHub
 or there are privacy concerns. In these cases, give explanations of where users can download
 or obtain the data and where they should save it, such that the whole workflow runs smoothly.
-
-## Tips for working on GECO workstation via SSH
-
-These are some useful resources to run code on the GECO workstations, or generally on a remote server via SSH.
-
-### nohup
-
-`nohup` allows to run a command in Linux systems that keeps processes running even after exiting the shell
-or terminal (more info [here](https://www.digitalocean.com/community/tutorials/nohup-command-in-linux)). 
-In order to run a script, such that it won't stop when your SSH connection breaks or you
-close the terminal, and save the standard output into a file `script.out`, run:
-
-```
-nohup python script.py > script.out 2>&1 &
-```
-The command `2>&1` saves error messages into the output file. Using `&` makes the process run in the background
-(so you can keep using the terminal) and returns the process ID number so you can check out or kill the process later. 
-
-### tensorboard
-
-If you use TensorBoard to log the training of your machine learning models, you may want to observe the
-training progress live on your machine, while you're training on the server. To do so, follow these instructions, adapted from
-[stackoverflow](https://stackoverflow.com/questions/37987839/how-can-i-run-tensorboard-on-a-remote-server):
-
-- When you `ssh` into the machine, use the option -L to transfer the port 6006 of the remote server into the port 16006 of your machine.
-  As example, my login to workstation2:
-  ```
-  ssh -L 16006:127.0.0.1:6006 pepaaran@130.92.119.132
-  ```
-
-- Then launch `tensorboard` on the remote machine using a standard tensorboard --logdir log with the default 6006 port. Make sure
-  that a conda environment with `tensorboard` installed is activated, then run:
-  ```
-  tensorboard --logdir models/runs/path_to_the_runs
-  ```
-- On your local machine, go to [http://127.0.0.1:16006](http://127.0.0.1:16006) to see your remote TensorBoard.
 
