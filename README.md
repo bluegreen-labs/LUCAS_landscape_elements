@@ -9,7 +9,8 @@
 Run the following code from the terminal to set up your repository and conda environment. 
 Make sure that [miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html) 
 and [python](https://wiki.python.org/moin/BeginnersGuide/Download) are installed prior. 
-```
+
+```bash
 git clone git@github.com:pepaaran/python_proj_template.git
 cd python_proj_template
 conda env create -f environment.yml --name myenv
@@ -19,7 +20,7 @@ The `environment.yml` file in this template includes basic data science packages
 you may want to assign a custom name to the environment, install any remaining packages used during
 the project and update the environment file running:
 
-```
+```bash
 conda env export --name myname
 ```
 
@@ -33,7 +34,7 @@ the `pytorch` version. Check how to install `pytorch` [here](https://pytorch.org
 if your setup works by starting `python` in a terminal and testing for the presence of accelerated GPU
 deep learning capabilities with the following code snippet. The last command should return `True`!
 
-```
+```python
 import torch
 torch.cuda.is_available()
 ```
