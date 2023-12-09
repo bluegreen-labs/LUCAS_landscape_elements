@@ -15,7 +15,6 @@ dependencies:
   - python
   - matplotlib
   - pandas
-# The following are for using pytorch with a GPU
   - pytorch
   - torchaudio
   - torchvision

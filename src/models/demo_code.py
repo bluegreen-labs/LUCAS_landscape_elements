@@ -1,32 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-# Install required libs
-#!pip install -U segmentation-models-pytorch albumentations --user 
-
-
-# In[ ]:
-
-
-#!pip uninstall -y segmentation-models-pytorch
-
-
-# ## Loading data
-
-# For this example we will use **CamVid** dataset. It is a set of:
-#  - **train** images + segmentation masks
-#  - **validation** images + segmentation masks
-#  - **test** images + segmentation masks
-#  
-# All images have 320 pixels height and 480 pixels width.
-# For more inforamtion about dataset visit http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/.
-
-# In[3]:
-
-
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -34,21 +6,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-
-# In[4]:
-
-
-DATA_DIR = './data/CamVid/'
-
-# load repo with data if it is not exists
-if not os.path.exists(DATA_DIR):
-    print('Loading data...')
-    os.system('git clone https://github.com/alexgkendall/SegNet-Tutorial ./data')
-    print('Done!')
-
-
-# In[5]:
-
+# set data directory
+# run 01_pre-processing.py in the data directory
+# to generate the data from raw data
+DATA_DIR = '../../data/processed/'
 
 x_train_dir = os.path.join(DATA_DIR, 'train')
 y_train_dir = os.path.join(DATA_DIR, 'trainannot')
@@ -58,10 +19,6 @@ y_valid_dir = os.path.join(DATA_DIR, 'valannot')
 
 x_test_dir = os.path.join(DATA_DIR, 'test')
 y_test_dir = os.path.join(DATA_DIR, 'testannot')
-
-
-# In[6]:
-
 
 # helper function for data visualization
 def visualize(**images):
@@ -78,19 +35,9 @@ def visualize(**images):
 
 
 # ### Dataloader
-# 
-# Writing helper class for data extraction, tranformation and preprocessing  
-# https://pytorch.org/docs/stable/data
-
-# In[7]:
-
 
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset as BaseDataset
-
-
-# In[8]:
-
 
 class Dataset(BaseDataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -155,9 +102,6 @@ class Dataset(BaseDataset):
         return len(self.ids)
 
 
-# In[9]:
-
-
 # Lets look at data we have
 
 dataset = Dataset(x_train_dir, y_train_dir, classes=['car'])
@@ -190,14 +134,7 @@ visualize(
 # All this transforms can be easily applied with [**Albumentations**](https://github.com/albu/albumentations/) - fast augmentation library.
 # For detailed explanation of image transformations you can look at [kaggle salt segmentation exmaple](https://github.com/albu/albumentations/blob/master/notebooks/example_kaggle_salt.ipynb) provided by [**Albumentations**](https://github.com/albu/albumentations/) authors.
 
-# In[10]:
-
-
 import albumentations as albu
-
-
-# In[11]:
-
 
 def get_training_augmentation():
     train_transform = [
@@ -289,10 +226,10 @@ for i in range(3):
     visualize(image=image, mask=mask.squeeze(-1))
 
 
-# ## Create model and train
+#---- split this out as this is the MAIN routine / the rest are subroutines
+# which should be put in a separate file
 
-# In[13]:
-
+## Create model and train
 
 import torch
 import numpy as np
