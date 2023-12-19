@@ -2,8 +2,6 @@
 
 
 
-
-
 ## Setting up your python environment
 
 Run the following code from the terminal to set up your repository and conda environment. 
@@ -16,23 +14,16 @@ cd python_proj_template
 conda env create -f environment.yml --name myenv
 conda activate myenv
 ```
-The `environment.yml` file in this template includes basic data science packages. When starting a new project,
-you may want to assign a custom name to the environment, install any remaining packages used during
-the project and update the environment file running:
+The `environment.yml` file in this template includes basic data science packages. When starting a new project, you may want to assign a custom name to the environment, install any remaining packages used during the project and update the environment file running:
 
 ```bash
 conda env export --name myname
 ```
 
 The previous code will update the packages specified in `environment.yml` to match all the
-packages installed in your current conda environment, with their versions. This is key to a reproducible
-workflow, so make sure that your environment file stays up to date with the packages (and versions)
-used in your project.
+packages installed in your current conda environment, with their versions. This is key to a reproducible workflow, so make sure that your environment file stays up to date with the packages (and versions) used in your project.
 
-To work with PyTorch and train models on a GPU, make sure that your CUDA drivers are compatible with 
-the `pytorch` version. Check how to install `pytorch` [here](https://pytorch.org/). Then you can check
-if your setup works by starting `python` in a terminal and testing for the presence of accelerated GPU
-deep learning capabilities with the following code snippet. The last command should return `True`!
+To work with PyTorch and train models on a GPU, make sure that your CUDA drivers are compatible with the `pytorch` version. Check how to install `pytorch` [here](https://pytorch.org/). Then you can check if your setup works by starting `python` in a terminal and testing for the presence of accelerated GPU deep learning capabilities with the following code snippet. The last command should return `True`!
 
 ```python
 import torch
@@ -53,21 +44,12 @@ individual data analyses.
 ├── LICENSE
 |
 ├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
 │   ├── processed      <- The final, canonical data sets for modeling.
 │   └── raw            <- The original, immutable data dump. Never touch.
 │
 ├── models             <- Trained and serialized models, model predictions, or model summaries.
 │
-├── notebooks          <- Jupyter notebooks for exploration only. Naming convention should contain
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-pap-initial-data-exploration`.
-│
-├── references         <- Data dictionaries, manuals, bibliography (.bib)
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
+├── notebooks          <- Jupyter notebooks for exploration only.
 │
 ├── environment.yml    <- The requirements file for reproducing the analysis environment, e.g.
 │                         generated with `conda env export > environment.yml`
@@ -83,13 +65,11 @@ individual data analyses.
 │   ├── features       <- Scripts to turn raw data into features for modeling.
 │   │   └── 02_build_features.py
 │   │
-│   ├── models         <- Scripts to train models and then use trained models to make
-│   │   │                 predictions.
-│   │   ├── 03_train_model.py
-│   │   └── 04_predict_model.py
-│   │
-│   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-│       └── 05_visualize.py
+│   └── models         <- Scripts to train models and then use trained models to make
+│       │                 predictions.
+│       ├── 03_train_model.py
+│       └── 04_predict_model.py
+│ 
 │
 └── .gitignore         <- Indicates which files should be ignored when pushing.
 ```

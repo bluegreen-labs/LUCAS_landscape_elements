@@ -15,7 +15,18 @@ dependencies:
   - python
   - matplotlib
   - pandas
+  - yaml
+  - json
+# The following are for using pytorch with a GPU
   - pytorch
   - torchaudio
   - torchvision
   - pytorch-cuda=12.1
+# These modules are computer vision specific
+  - albumentations
+  - imgaug
+  - Pillow
+  - segmentation-models-pytorch
+  - pytorch-lightning==1.5.4
+# Logging
+  - tensorboardx
