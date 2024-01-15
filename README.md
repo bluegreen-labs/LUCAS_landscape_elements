@@ -1,5 +1,8 @@
-# A minimal worked example LUCAS segmentation model
+# A minimal worked example using LUCAS data
 
+This is worked example using data sourced from the Land Use and Coverage Area frame Survey (LUCAS) data set, following a strict sampling and acquisition protocol. Landscape objects and elements were fully delineated on the street (eye) level landscape images and can provide critical context for land-use and land-cover assessments and comparison to satellite remote sensing data.
+
+This worked example provides a single class segmentation example framework which should be easily expanded to multiclass problems. The code relies on [pytorch](https://pytorch.org/) and the [Lightning](https://lightning.ai/docs/pytorch/stable/) modelling framework. Environment and Docker files are provided to ease code deployment.
 
 ## Setting up your python environment
 
