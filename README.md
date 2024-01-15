@@ -1,7 +1,6 @@
 # A minimal worked example LUCAS segmentation model
 
 
-
 ## Setting up your python environment
 
 Run the following code from the terminal to set up your repository and conda environment. 
@@ -30,3 +29,10 @@ Data will be mounted in the docker virtual machine at `/workspace` and is fully 
 docker run -it --rm -v "${PWD}":/workspace/ mlenv
 ```
 
+## Loading the required data
+
+Download the data in the main project directory in the `data/` directory. Using the `src/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the diretory containing images and mask files.
+
+## Training the model
+
+ Use the `train.py` script to train the model by passing as single argument, the data directory. It is assumed that the `data.json` file is generated.
