@@ -5,27 +5,27 @@ channels:
   - pytorch-nightly
 dependencies:
   - ipython
+  - ipywidgets
+  - tqdm
   - setuptools
-  - pip
   - wheel
-  - conda-content-trust
-  - conda-libmamba-solver
-  - scikit-learn
   - numpy
-  - python
   - matplotlib
   - pandas
   - yaml
-  - json
+# notebook environment
+  - jupyterlab
+  - notebook
+  - nb_conda_kernels
 # The following are for using pytorch with a GPU
   - pytorch
   - torchaudio
   - torchvision
   - pytorch-cuda=12.1
 # These modules are computer vision specific
+  - opencv
   - albumentations
-  - imgaug
-  - Pillow
+  - imaug
   - segmentation-models-pytorch
   - pytorch-lightning==1.5.4
 # Logging
