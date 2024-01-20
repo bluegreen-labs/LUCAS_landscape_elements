@@ -39,9 +39,12 @@ class Model(pl.LightningModule):
 
         # for image segmentation dice loss could be the best first choice
         self.loss_fn = smp.losses.DiceLoss(smp.losses.BINARY_MODE, from_logits = True)
+        
+        # save hyperparameters in model
+        self.save_hyperparameters()
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr = 0.0001)
+        optimizer = torch.optim.Adam(self.parameters(), lr = 0.0005)
         return optimizer
     
     def prepare_batch(self, batch):
@@ -50,14 +53,12 @@ class Model(pl.LightningModule):
         image = batch[0]
 
         # Shape of the image should be (batch_size, num_channels, height, width)
-        # if you work with grayscale images, expand channels dim to have [batch_size, 1, height, width]
+        # if you work with grayscale images, expand channels dim to have 
+        # [batch_size, 1, height, width]
         assert image.ndim == 4
 
-        # Check that image dimensions are divisible by 32, 
-        # encoder and decoder connected by `skip connections` and usually encoder have 5 stages of 
-        # downsampling by factor 2 (2 ^ 5 = 32); e.g. if we have image with shape 65x65 we will have 
-        # following shapes of features in encoder and decoder: 84, 42, 21, 10, 5 -> 5, 10, 20, 40, 80
-        # and we will get an error trying to concat these features
+        # Check that image dimensions are divisible by 32,
+        # encoder and decoder connected by `skip connections` require this
         h, w = image.shape[2:]
         assert h % 32 == 0 and w % 32 == 0
 
@@ -88,4 +89,14 @@ class Model(pl.LightningModule):
         loss = self.loss_fn(y_hat, y)
         self.log('val_loss', loss)
         return loss
+    
+    def test_step(self, batch, batch_idx):
+        y_hat, y = self.infer_batch(batch)
+        loss = self.loss_fn(y_hat, y)
+        self.log('test_loss', loss)
+        return loss
+    
+    def predict_step(self, batch, batch_idx):
+        y_hat, y = self.infer_batch(batch)
+        return y_hat
 

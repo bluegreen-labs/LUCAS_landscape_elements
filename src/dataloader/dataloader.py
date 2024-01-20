@@ -39,7 +39,10 @@ class Dataset(BaseDataset):
      'Grass','Terrain','Mountain','Plant;Bush','Cropfield'
      'Crop','Rock','Flowerfield','Animal','Stonewall','Flower',
      'Bark','Well','Ditch','Terrace','Building','Earth;Ground',
-     'Wall','Orchard','Field;Margin','Fruit','waterbodies']    
+     'Wall','Orchard','Field;Margin','Fruit','waterbodies']
+    
+    # lower case 
+    CLASSES = [item.lower() for item in CLASSES]
     
     def __init__(
             self,

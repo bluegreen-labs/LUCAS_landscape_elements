@@ -34,7 +34,7 @@ docker run -it --rm -v "${PWD}":/workspace/ mlenv
 
 ## Loading the required data
 
-Download the data in the main project directory in the `data/` directory. Using the `src/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the diretory containing images and mask files.
+Download the data in the main project directory in the `data/` directory. Using the `src/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing images and mask files.
 
 ## Training the model
 
