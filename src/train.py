@@ -2,7 +2,6 @@
 
 # general python setup
 import os, sys, json, argparse
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 # general data wrangling and plotting libraries
 import numpy as np
