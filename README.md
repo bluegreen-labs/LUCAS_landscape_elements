@@ -34,8 +34,17 @@ docker run -it --rm -v "${PWD}":/workspace/ mlenv
 
 ## Loading the required data
 
-Download the data in the main project directory in the `data/` directory. Using the `src/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing images and mask files.
+Download the data in the main project directory in the `data/` directory. Using the `data/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing the list of this split, the original data will not be moved.
 
 ## Training the model
 
- Use the `train.py` script to train the model by passing as single argument, the data directory. It is assumed that the `data.json` file is generated.
+Use the `src/train.py` script to train the model. The script requires a number of parameters, the path to the data.json file, the location where to store the model and a trigger to set it to train, i.e. "train".
+
+```bash
+./train.py --d ../data/raw/ml_data/ --m ../models/ --train
+```
+The data can be tested using the "test" trigger.
+
+```bash
+./train.py --d ../data/raw/ml_data/ --m ../models/ --test
+```
