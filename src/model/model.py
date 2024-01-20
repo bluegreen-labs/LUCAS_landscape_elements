@@ -47,33 +47,23 @@ class Model(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr = 0.0005)
         return optimizer
     
-    def prepare_batch(self, batch):
+    def infer_batch(self, batch):
         
-        # load image from list
+        # load image, masks from list
         image = batch[0]
-
-        # Shape of the image should be (batch_size, num_channels, height, width)
-        # if you work with grayscale images, expand channels dim to have 
-        # [batch_size, 1, height, width]
+        mask = batch[1]
+        
+        # check image dimensions and
+        # multiples of 32
         assert image.ndim == 4
-
-        # Check that image dimensions are divisible by 32,
-        # encoder and decoder connected by `skip connections` require this
         h, w = image.shape[2:]
         assert h % 32 == 0 and w % 32 == 0
 
-        mask = batch[1]
-
-        # Shape of the mask should be [batch_size, num_classes, height, width]
-        # for binary segmentation num_classes = 1
+        # check image dimensions and the range of 
+        # the mask values - should be between 0 and 1
         assert mask.ndim == 4
-
-        # Check that mask values in between 0 and 1, NOT 0 and 255 for binary segmentation
         assert mask.max() <= 1.0 and mask.min() >= 0
         
-        return image, mask
-    
-    def infer_batch(self, batch):
         x, y = self.prepare_batch(batch)
         y_hat = self.model(x)
         return y_hat, y
