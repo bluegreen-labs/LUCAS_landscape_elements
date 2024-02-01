@@ -40,11 +40,13 @@ The data used in this project can be downladed in:
 
 We recommend to use the second link and copy the contents of ml_data to the data folder.
 
+```
 The structure of the data should be:
 ├── data                
 │   ├── ml_data        <- name of the folder with the images and masks
 │   │   ├── images     <- images folder
 │   │   └── masks      <- mask folder
+```
 
 Using the `data/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing the list of this split, the original data will not be moved. the script requires to set the path to the images and masks and the csv containing the labels of the masks.
 
