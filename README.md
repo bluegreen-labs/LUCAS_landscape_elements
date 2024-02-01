@@ -52,15 +52,23 @@ Using the `data/prepare_data.py` script divide the data in a train, validation a
 ./prepare_data.py -i ./ml_data/ -l ./classes_dataset.csv
 ```
 
-## Training the model
+## Training and testing the model
 
 Use the `src/train.py` script to train the model. The script requires a number of parameters, the path to the data.json file, the location where to store the model and a trigger to set it to train, i.e. "train".
 
 ```bash
-./train.py --d ../data/ml_data/ --m ../models/ --train
+./train.py -d ../data/ml_data/ -m ../models/ --train
 ```
 The data can be tested using the "test" trigger.
 
 ```bash
-./train.py --d ../data/ml_data/ --m ../models/ --test
+./train.py -d ../data/ml_data/ -m ../models/ --test
 ```
+
+## Inference an image
+Use the `src/inference.py` script to inference.
+
+```bash
+./inference.py -d ../data/ml_data/ -m ../models/  -s ../
+```
+

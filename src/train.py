@@ -59,6 +59,7 @@ parser.add_argument(
         '-e',
         '--epochs',
         help='integer: numer of epochs',
+        type=int,
         required = False,
         default = 1
         )
@@ -166,7 +167,7 @@ if __name__ == "__main__":
 		# PyTorch Lightning Trainer
         trainer = pl.Trainer(
             accelerator = "gpu", # change to cpu 
-            max_epochs = 1,
+            max_epochs = args.epochs,
             callbacks = [early_stopping, model_checkpoint]
         )
         
