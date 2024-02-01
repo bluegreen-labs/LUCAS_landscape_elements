@@ -25,7 +25,7 @@ dependencies:
 # These modules are computer vision specific
   - opencv
   - albumentations
-  - imaug
+  - imgaug
   - segmentation-models-pytorch
   - pytorch-lightning==1.5.4
 # Logging

@@ -113,7 +113,7 @@ def getArgs():
    '-l',
    '--labels',
    type = str,
-   help = 'File with label data',
+   help = 'File with label data codes in csv format',
    required = True
    )
    
@@ -159,6 +159,8 @@ if __name__ == '__main__':
    json_data['train'] = train.to_dict('records')
    json_data['test'] = test.to_dict('records')
    json_data['val'] = val.to_dict('records')
+   
+   # the json file is saved in the input data folder
    
    with open(os.path.join(input_path, 'data.json'), 'w') as f:
     json.dump(json_data, f)

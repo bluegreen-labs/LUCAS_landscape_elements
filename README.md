@@ -11,8 +11,6 @@ Make sure that [miniconda](https://docs.conda.io/projects/miniconda/en/latest/mi
 and [python](https://wiki.python.org/moin/BeginnersGuide/Download) are installed prior. 
 
 ```bash
-git clone git@github.com:pepaaran/python_proj_template.git
-cd python_proj_template
 conda env create -f environment.yml --name mlenv
 conda activate mlenv
 ```
@@ -34,17 +32,35 @@ docker run -it --rm -v "${PWD}":/workspace/ mlenv
 
 ## Loading the required data
 
-Download the data in the main project directory in the `data/` directory. Using the `data/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing the list of this split, the original data will not be moved.
+Download the data in the main project directory in the `data/` directory. 
+The data used in this project can be downladed in:
+
+- Raw data : (https://data.jrc.ec.europa.eu/dataset/adace32a-465f-412b-bc11-be1bc06322d3)
+- Raw data, ML data :(https://beta.source.coop/repositories/jrc-lucas/jrc-lucas-ml/description/)
+
+We recommend to use the second link and copy the contents of ml_data to the data folder.
+
+The structure of the data should be:
+├── data                
+│   ├── ml_data        <- name of the folder with the images and masks
+│   │   ├── images     <- images folder
+│   │   └── masks      <- mask folder
+
+Using the `data/prepare_data.py` script divide the data in a train, validation and test datasets. This split will be written as a `data.json` file in the directory containing the list of this split, the original data will not be moved. the script requires to set the path to the images and masks and the csv containing the labels of the masks.
+
+```bash
+./prepare_data.py -i ./ml_data/ -l ./classes_dataset.csv
+```
 
 ## Training the model
 
 Use the `src/train.py` script to train the model. The script requires a number of parameters, the path to the data.json file, the location where to store the model and a trigger to set it to train, i.e. "train".
 
 ```bash
-./train.py --d ../data/raw/ml_data/ --m ../models/ --train
+./train.py --d ../data/ml_data/ --m ../models/ --train
 ```
 The data can be tested using the "test" trigger.
 
 ```bash
-./train.py --d ../data/raw/ml_data/ --m ../models/ --test
+./train.py --d ../data/ml_data/ --m ../models/ --test
 ```

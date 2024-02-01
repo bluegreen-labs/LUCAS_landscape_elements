@@ -26,9 +26,11 @@ import imgaug
 import albumentations as albu
 
 # appending a path
-sys.path.append('model')
-sys.path.append('dataloader')
-sys.path.append('utils')
+# sys.append doent like relative paths
+sys.path.append(os.path.join(os.path.dirname(__file__), 'model'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'dataloader'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
+
 from model import *
 from dataloader import *
 from utils import *
