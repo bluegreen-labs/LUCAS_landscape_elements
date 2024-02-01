@@ -66,7 +66,7 @@ parser.add_argument(
         )
 
 if __name__ == "__main__":
-
+	# Parsing command line arguments
     args = parser.parse_args()
 
     # Model setup
@@ -77,6 +77,7 @@ if __name__ == "__main__":
         ENCODER_WEIGHTS
     )
     
+    # Initializing the segmentation model
     model = Model(
         "DeepLabV3Plus",
         "resnet34",
@@ -84,6 +85,7 @@ if __name__ == "__main__":
         out_classes = 1
     )
     
+    # Defining the classes for segmentation
     CLASSES = ['tree']
     
     # load previous checkpoint and evaluate
@@ -92,17 +94,19 @@ if __name__ == "__main__":
         args.model + "last_epoch.ckpt"
         )
     
+    # Setting up the PyTorch Lightning trainer
     trainer = pl.Trainer(
         accelerator = "gpu"
         )
 
-    # predict data
+    # Performing inference on the test data
     mask = trainer.predict(
         model,
         dataloaders = test_dataloader,
         verbose = False
     )
 
+	# Visualizing the results
     visualize(
         image=image_vis, 
         ground_truth_mask=gt_mask, 

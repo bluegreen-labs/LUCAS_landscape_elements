@@ -13,19 +13,11 @@ import imgaug
 import albumentations as albu
 
 class Dataset(BaseDataset):
-    """Read images, apply augmentation and preprocessing transformations.
-    
-    Args:
-        data_dir (str): path to main image path
-        split (str): which split to process ("train", "test", "val")
-        classes (list): values of classes to extract from segmentation mask
-        augmentation (albumentations.Compose): data transfromation pipeline 
-            (e.g. flip, scale, etc.)
-        preprocessing (albumentations.Compose): data preprocessing 
-            (e.g. normalization, shape manipulation, etc.)
+    """
+    Dataset class for reading images, applying augmentation, and preprocessing transformations.
 
-    By default a file with files as relative paths is loaded
-    from data.json in the data_dir
+    By default, a file with file paths as relative paths is loaded
+    from data.json in the data_dir.
     """
     
     # These are the fixed classes as described in the data paper
@@ -52,6 +44,18 @@ class Dataset(BaseDataset):
             augmentation=None, 
             preprocessing=None,
     ):
+		"""
+		Constructor method for initializing the ImageProcessor class.
+
+		Parameters:
+			- data_dir (str): Path to the main image directory.
+			- split (str): Which split to process ("train", "test", "val").
+			- classes (list): Values of classes to extract from the segmentation mask.
+			- augmentation (albumentations.Compose): Data transformation pipeline
+			(e.g., flip, scale, etc.).
+			- preprocessing (albumentations.Compose): Data preprocessing
+			(e.g., normalization, shape manipulation, etc.).
+		"""
         
         # read in list of files from JSON
         with open(os.path.join(data_dir,"data.json")) as f:
@@ -78,6 +82,15 @@ class Dataset(BaseDataset):
         self.preprocessing = preprocessing
     
     def __getitem__(self, i):
+		"""
+        Method to get an item from the dataset.
+
+        Parameters:
+            -i (int): Index of the item.
+
+        Returns:
+            tuple: Image and corresponding mask.
+        """
         
         # read data
         image = cv2.imread(self.images[i])
@@ -102,21 +115,45 @@ class Dataset(BaseDataset):
         return image, mask
         
     def __len__(self):
+		"""
+        Method to get the length of the dataset.
+
+        Returns:
+            int: Length of the dataset.
+        """
         return len(self.ids)
 
 
-# To counter overfitting of large models some augmentation
-# of the training data is required
+
 
 def get_training_augmentation():
-    train_transform = [
+	"""
+    Function to get data augmentation transformations for training.
+    To counter overfitting of large models some augmentation
+    of the training data is required
 
+    Returns:
+        albumentations.Compose: Data augmentation pipeline for training.
+    """
+    
+	# List of augmentation transformations
+    train_transform = [
+        # Flip the image horizontally with a 50% probability
         albu.HorizontalFlip(p=0.5),
+        
+        # Apply random scaling, rotation, and shifting
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=1, border_mode=0),
+        
+        # Pad the image if needed to meet minimum height and width requirements
         albu.PadIfNeeded(min_height=320, min_width=320, always_apply=True, border_mode=0),
+        
+        # Randomly crop the image to the specified height and width
         albu.RandomCrop(height=320, width=320, always_apply=True),
+        
+        # Apply perspective transformation with a 50% probability
         albu.Perspective(p=0.5),
 
+        # Randomly apply one of the contrast enhancement techniques
         albu.OneOf(
             [
                 albu.CLAHE(p=1),
@@ -126,6 +163,7 @@ def get_training_augmentation():
             p=0.9,
         ),
 
+        # Randomly apply one of the sharpening or blurring techniques
         albu.OneOf(
             [
                 albu.Sharpen(p=1),
@@ -135,6 +173,7 @@ def get_training_augmentation():
             p=0.9,
         ),
 
+        # Randomly apply one of the brightness and contrast adjustments
         albu.OneOf(
             [
                 albu.RandomBrightnessContrast(p=1),
@@ -143,37 +182,60 @@ def get_training_augmentation():
             p=0.9,
         ),
     ]
+
+    # Return the composition of all augmentation transformations
     return albu.Compose(train_transform)
 
 
 def get_validation_augmentation():
-    """Add paddings to make image shape divisible by 32"""
+	"""
+    Function to get data augmentation transformations for the validation split
+
+    Returns:
+        albumentations.Compose: Data augmentation pipeline for validation.
+    """
+    
+    #Add paddings to make image shape divisible by 32"""
     test_transform = [
         albu.RandomCrop(height=320, width=320, always_apply=True)
+        # Uncomment the line below to add paddings to make image shape divisible by 32
         #albu.PadIfNeeded(384, 480)
     ]
     return albu.Compose(test_transform)
 
 
 def to_tensor(x, **kwargs):
+	"""
+    Convert the input array to a PyTorch tensor.
+
+    Parameters:
+        - x: Input array.
+
+    Returns:
+        numpy.ndarray: Transposed array converted to float32.
+    """
+    
     return x.transpose(2, 0, 1).astype('float32')
 
 
 def get_preprocessing(preprocessing_fn):
-    """Construct preprocessing transform
-    
-    Args:
-        preprocessing_fn (callbale): data normalization function 
-            (can be specific for each pretrained neural network)
-    Return:
-        transform: albumentations.Compose
-    
+    """
+    Function to get preprocessing transformations.
+
+    Parameters:
+        - preprocessing_fn: Preprocessing function to be applied.
+
+    Returns:
+        albumentations.Compose: Preprocessing pipeline.
     """
     
+    # List of preprocessing transformations
     _transform = [
+        # Apply the provided preprocessing function to the image
         albu.Lambda(image=preprocessing_fn),
+        
+        # Convert both image and mask to PyTorch tensors
         albu.Lambda(image=to_tensor, mask=to_tensor),
     ]
+    
     return albu.Compose(_transform)
-
-
