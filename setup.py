@@ -22,14 +22,19 @@ setup(
   ],
   tests_require=[
     'pytest',
-    'torch==1.12.1',
-    'torchvision==0.13.1'
-  ],
-  classifiers=[
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'Topic :: Scientific/Engineering :: Artificial Intelligence',
-    'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.6',
+    'torch==2.1.0',
+    'torchvision==0.6',
+    'torchaudio==2.1.0',
+    'tqdm',
+	'setuptools',
+	'wheel',
+	'numpy',
+	'matplotlib',
+	'pandas',
+	'albumentations',
+	'imgaug',
+	'segmentation-models-pytorch',
+	'pytorch-lightning==1.5.4',
+	'tensorboardX'
   ],
 )
