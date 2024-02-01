@@ -20,6 +20,16 @@ import lightning as pl
 
 class Model(pl.LightningModule):
     def __init__(self, arch, encoder_name, in_channels, out_classes, **kwargs):
+		"""
+		Constructor method for initializing the Model class.
+
+		Parameters:
+			- arch: Architecture of the model.
+			- encoder_name: Name of the encoder for feature extraction.
+			- in_channels: Number of input channels.
+			- out_classes: Number of output classes.
+			- **kwargs: Additional keyword arguments for model creation.
+		"""
         super().__init__()
         
         # load model architecture
@@ -44,10 +54,32 @@ class Model(pl.LightningModule):
         self.save_hyperparameters()
     
     def configure_optimizers(self):
+		"""
+        Method to configure the optimizer
+        in this case an Adam optimizer with LR 0.0005
+        Returns:
+            torch.optim.Optimizer: Optimizer for training.
+        """
+        
         optimizer = torch.optim.Adam(self.parameters(), lr = 0.0005)
         return optimizer
     
+    def prepare_batch(self, batch):
+        """Prepare batch for training or evaluation: 
+        pass to a device with options."""
+        x, y = batch
+        return x,y
+        
     def infer_batch(self, batch):
+		"""
+        Method to perform inference on a batch of data.
+
+        Parameters:
+            - batch: Input batch containing images and masks.
+
+        Returns:
+            tuple: Predicted mask and ground truth mask.
+        """
         
         # load image, masks from list
         image = batch[0]
@@ -69,24 +101,67 @@ class Model(pl.LightningModule):
         return y_hat, y
 
     def training_step(self, batch, batch_idx):
+		"""
+        Method to do the inference part of a training step and
+        calculate the loss.
+
+        Parameters:
+            - batch: Input batch containing images and masks.
+            - batch_idx: Index of the batch.
+
+        Returns:
+            torch.Tensor: Loss for the current step.
+        """
         y_hat, y = self.infer_batch(batch)
         loss = self.loss_fn(y_hat, y)
         self.log('train_loss', loss, prog_bar = True)
         return loss
     
     def validation_step(self, batch, batch_idx):
+		"""
+        Method to do the inference part of a validation step and
+        calculate the loss.
+
+        Parameters:
+            - batch: Input batch containing images and masks.
+            - batch_idx: Index of the batch.
+
+        Returns:
+            torch.Tensor: Loss for the current step.
+        """
         y_hat, y = self.infer_batch(batch)
         loss = self.loss_fn(y_hat, y)
         self.log('val_loss', loss)
         return loss
     
     def test_step(self, batch, batch_idx):
+		"""
+        Method to do the inference part of a test step and
+        calculate the loss.
+
+        Parameters:
+            - batch: Input batch containing images and masks.
+            - batch_idx: Index of the batch.
+
+        Returns:
+            torch.Tensor: Loss for the current step.
+        """
         y_hat, y = self.infer_batch(batch)
         loss = self.loss_fn(y_hat, y)
         self.log('test_loss', loss)
         return loss
     
     def predict_step(self, batch, batch_idx):
+		"""
+        Method to perform inference on a batch 
+
+        Parameters:
+            - batch: Input batch containing images and masks.
+            - batch_idx: Index of the batch.
+
+        Returns:
+            torch.Tensor: Predicted mask.
+        """
         y_hat, y = self.infer_batch(batch)
         return y_hat
 

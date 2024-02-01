@@ -8,7 +8,12 @@ import matplotlib.pyplot as plt
 
 # helper function for data visualization
 def visualize(**images):
-    """PLot images in one row."""
+	"""
+    Plot images in one row.
+
+    Parameters:
+        **images: Keyword arguments where keys are image names and values are the images themselves.
+    """
     n = len(images)
     plt.figure(figsize=(16, 5))
     for i, (name, image) in enumerate(images.items()):

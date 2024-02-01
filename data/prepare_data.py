@@ -19,7 +19,19 @@ import numpy as np
 from PIL import Image
 
 def copy_images(df, image_path, split, out_path):
-   
+	"""
+	Copy images specified in a DataFrame from one location to another.
+
+	Parameters:
+	- df: DataFrame containing image information.
+	- image_path: Path where the source images are located.
+	- split: Split criteria for organizing images in the output path
+				line train/test/val.
+	- out_path: Root path for the output destination.
+
+	Returns:
+	None
+	"""
    for i,img in df.iterrows():
       # match file names
       basename = os.path.basename(img[0])
@@ -37,10 +49,20 @@ def copy_images(df, image_path, split, out_path):
         pass
 
 def convert_classes(df, split, labels, out_path):
+	"""
+	Open mask files, relabel classes where necessary, and save them in the output directory.
+
+	Parameters:
+	- df: DataFrame containing mask file information.
+	- split: Split criteria for organizing images in the output path
+				line train/test/val.	
+	- labels: DataFrame containing label codes and corresponding new codes.
+	- out_path: Root path for the output destination.
+
+	Returns:
+	None
+	"""
    
-   # this opens the mask files, relabels the classes
-   # where necessary and saves them in the output
-   # directory
    for i,r in df.iterrows():
       
        # read in the mask data
@@ -65,8 +87,14 @@ def convert_classes(df, split, labels, out_path):
        filename = os.path.join(output_path, split, "masks", os.path.basename(r[0]))
        im.save(filename)
 
-# argument parser for the main routine
+
 def getArgs():
+	"""
+	Parse command line arguments for the main routine
+
+	Returns:
+	- args: Parsed command line arguments.
+	"""
 
    parser = argparse.ArgumentParser(
     description = 'Generate a ML dataset for LUCAS data',
@@ -85,7 +113,7 @@ def getArgs():
    '-l',
    '--labels',
    type = str,
-   help = 'File with label data',
+   help = 'File with label data codes in csv format',
    required = True
    )
    
@@ -131,6 +159,8 @@ if __name__ == '__main__':
    json_data['train'] = train.to_dict('records')
    json_data['test'] = test.to_dict('records')
    json_data['val'] = val.to_dict('records')
+   
+   # the json file is saved in the input data folder
    
    with open(os.path.join(input_path, 'data.json'), 'w') as f:
     json.dump(json_data, f)

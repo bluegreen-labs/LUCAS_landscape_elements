@@ -28,9 +28,11 @@ import albumentations as albu
 # import
 
 # appending a path
-sys.path.append('model')
-sys.path.append('dataloader')
-sys.path.append('utils')
+# sys.append doent like relative paths
+sys.path.append(os.path.join(os.path.dirname(__file__), 'model'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'dataloader'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
+
 from model import *
 from dataloader import *
 from utils import *
@@ -52,6 +54,16 @@ parser.add_argument(
         help='path to models',
         required = True
         )
+ 
+parser.add_argument(
+        '-e',
+        '--epochs',
+        help='integer: numer of epochs',
+        type=int,
+        required = False,
+        default = 1
+        )
+        
         
 group = parser.add_mutually_exclusive_group()
 
@@ -68,9 +80,11 @@ group.add_argument(
         )
 
 if __name__ == "__main__":
-
+	
+	# Parsing command line arguments
     args = parser.parse_args()
-
+	
+	# Model setup
     ENCODER = 'resnet34'
     ENCODER_WEIGHTS = 'imagenet'
     preprocessing_fn = smp.encoders.get_preprocessing_fn(
@@ -78,6 +92,7 @@ if __name__ == "__main__":
         ENCODER_WEIGHTS
     )
     
+    # Initializing the segmentation model
     model = Model(
         "DeepLabV3Plus",
         "resnet34",
@@ -85,9 +100,10 @@ if __name__ == "__main__":
         out_classes = 1
     )
     
+    # Defining the classes for segmentation
     CLASSES = ['tree']
     
-    # --- prepare the data ----
+    # Prepare data for training dataset
     train_dataset = Dataset(
         data_dir = args.data,
         split = "train",
@@ -96,6 +112,7 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #for validation dataset
     valid_dataset = Dataset(
         data_dir = args.data,
         split = "val",
@@ -104,6 +121,7 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #for test dataset
     test_dataset = Dataset(
         data_dir = args.data,
         split = "test",
@@ -112,6 +130,7 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #dataloaders for train validation 
     train_dataloader = DataLoader(
         train_dataset,
         batch_size = 2,
@@ -138,18 +157,21 @@ if __name__ == "__main__":
             patience = 10
         )
         
+        # model checkpoint callback
         model_checkpoint = pl.pytorch.callbacks.ModelCheckpoint(
             monitor = "val_loss",
             dirpath = args.model,
             filename = "last_epoch"
         )
-    
+		
+		# PyTorch Lightning Trainer
         trainer = pl.Trainer(
             accelerator = "gpu", # change to cpu 
-            max_epochs = 1,
+            max_epochs = args.epochs,
             callbacks = [early_stopping, model_checkpoint]
         )
         
+        # Training the model
         trainer.fit(
             model,
             train_dataloaders = train_dataloader,
