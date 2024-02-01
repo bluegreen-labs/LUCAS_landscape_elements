@@ -64,6 +64,12 @@ class Model(pl.LightningModule):
         optimizer = torch.optim.Adam(self.parameters(), lr = 0.0005)
         return optimizer
     
+    def prepare_batch(self, batch):
+        """Prepare batch for training or evaluation: 
+        pass to a device with options."""
+        x, y = batch
+        return x,y
+        
     def infer_batch(self, batch):
 		"""
         Method to perform inference on a batch of data.

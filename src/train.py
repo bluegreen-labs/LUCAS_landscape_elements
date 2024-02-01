@@ -54,6 +54,15 @@ parser.add_argument(
         help='path to models',
         required = True
         )
+ 
+parser.add_argument(
+        '-e',
+        '--epochs',
+        help='integer: numer of epochs',
+        required = False,
+        default = 1
+        )
+        
         
 group = parser.add_mutually_exclusive_group()
 
