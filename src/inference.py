@@ -10,25 +10,13 @@ import matplotlib.pyplot as plt
 
 # basic torch machine learning framework
 import torch
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset as BaseDataset
-
-# easy loading of model frameworks
-# provides access to segmentation models and weights
-import segmentation_models_pytorch as smp
-
-# wrappers for torch to make
-# training schedules easier to code up
-import lightning as pl
-
-# image augmentation library
-import imgaug
-import albumentations as albu
 
 # appending a path
-sys.path.append('model')
-sys.path.append('dataloader')
-sys.path.append('utils')
+# sys.append doent like relative paths
+sys.path.append(os.path.join(os.path.dirname(__file__), 'model'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'dataloader'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
+
 from model import *
 from dataloader import *
 from utils import *
@@ -38,73 +26,70 @@ parser = argparse.ArgumentParser(
         )
 
 parser.add_argument(
-        '-i',
-        '--image',
-        help = 'path to training data (with a valid data.json file)',
-        required = True
-        )
-        
-parser.add_argument(
-        '-m',
-        '--model',
-        help='path to model checkpoint',
-        required = True
-        )
-        
-parser.add_argument(
-        '-s',
-        '--save',
-        help='path where to save the generated mask',
+        '-c',
+        '--checkpoint',
+        help='Path to the model checkpoint.',
         required = True
         )
 
 parser.add_argument(
-        '-v',
-        '--visualize',
-        help='visualize output',
+        '-i',
+        '--image',
+        help = 'Path to the image for inference.',
+        required = True
+        )
+parser.add_argument(
+        '-m',
+        '--model',
+        help='path to model configuration file',
+        required = True
+        )
+
+parser.add_argument(
+        '-o',
+        '--output',
+        help='output folder to save the plots',
         required = True
         )
 
 if __name__ == "__main__":
-
+	  # Parsing command line arguments
     args = parser.parse_args()
 
-    # Model setup
-    ENCODER = 'resnet34'
-    ENCODER_WEIGHTS = 'imagenet'
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(
-        ENCODER,
-        ENCODER_WEIGHTS
-    )
-    
-    model = Model(
-        "DeepLabV3Plus",
-        "resnet34",
-        in_channels = 3,
-        out_classes = 1
-    )
-    
-    CLASSES = ['tree']
-    
-    # load previous checkpoint and evaluate
-    # all test data, return the test metrics
-    model = Model.load_from_checkpoint(
-        args.model + "last_epoch.ckpt"
-        )
-    
-    trainer = pl.Trainer(
-        accelerator = "gpu"
-        )
+    # Load configuration
+    with open(args.model) as f:
+        config = json.load(f)
 
-    # predict data
-    mask = trainer.predict(
-        model,
-        dataloaders = test_dataloader,
-        verbose = False
-    )
 
-    visualize(
-        image=image_vis, 
-        ground_truth_mask=gt_mask, 
-        predicted_mask=pr_mask
-    )
+    ENCODER = config['encoder']
+    ENCODER_WEIGHTS = config["encoder_weights"]
+    preprocessing_fn = get_preprocessing(smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS))
+
+    # Load model
+    model = load_model(args.checkpoint, config)
+
+    # Prepare image
+    image = prepare_image(args.image, preprocessing_fn)
+
+    # Perform inference
+    predictions = inference(model, image)
+
+    # Post-processing and visualization
+    # Assuming binary segmentation for simplicity; adjust as needed
+    pred_mask = predictions.squeeze().cpu().numpy()
+    pred_mask = (pred_mask > 0.5).astype(np.uint8)  # Threshold predictions
+
+    original_image = cv2.imread(args.image)
+    original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+
+    # Load and prepare the original mask for visualization
+    mask_path = os.path.join(os.path.dirname(os.path.dirname(args.image)), "masks", \
+        os.path.basename(args.image).split('.')[0]+'.png')
+    original_mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+    if original_mask is None:
+        raise FileNotFoundError(f"Original mask file {mask_path} not found or is corrupted.")
+
+    # Visualize the original image, the predicted mask, and the original mask
+    visualize(f"{args.output}{os.path.basename(args.image).split('.')[0]}", original_image=original_image, predicted_mask=pred_mask, original_mask=original_mask)
+
+

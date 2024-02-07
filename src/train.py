@@ -17,9 +17,11 @@ from torch.utils.data import Dataset as BaseDataset
 # provides access to segmentation models and weights
 import segmentation_models_pytorch as smp
 
+
 # wrappers for torch to make
 # training schedules easier to code up
-import lightning as pl
+from lightning.pytorch.callbacks import ModelCheckpoint, EarlyStopping
+
 
 # image augmentation library
 import imgaug
@@ -28,9 +30,11 @@ import albumentations as albu
 # import
 
 # appending a path
-sys.path.append('model')
-sys.path.append('dataloader')
-sys.path.append('utils')
+# sys.append doent like relative paths
+sys.path.append(os.path.join(os.path.dirname(__file__), 'model'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'dataloader'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
+
 from model import *
 from dataloader import *
 from utils import *
@@ -47,11 +51,18 @@ parser.add_argument(
         )
         
 parser.add_argument(
+        '-o',
+        '--output',
+        help='path to where we will save the checkpoints',
+        required = True
+        )    
+
+parser.add_argument(
         '-m',
         '--model',
-        help='path to models',
+        help='path to the model configuration',
         required = True
-        )
+        )      
         
 group = parser.add_mutually_exclusive_group()
 
@@ -68,26 +79,46 @@ group.add_argument(
         )
 
 if __name__ == "__main__":
-
+	
+	  # Parsing command line arguments
     args = parser.parse_args()
 
-    ENCODER = 'resnet34'
-    ENCODER_WEIGHTS = 'imagenet'
+    # Load configuration file
+    
+    with open(args.model) as config_file:
+        config = json.load(config_file)
+
+    # Defining the classes for segmentation
+    CLASSES = ['tree']
+	
+	  # Model setup
+    ENCODER = config['encoder']
+    ENCODER_WEIGHTS = config["encoder_weights"]
     preprocessing_fn = smp.encoders.get_preprocessing_fn(
         ENCODER,
         ENCODER_WEIGHTS
     )
     
+    # Initializing the segmentation model
     model = Model(
-        "DeepLabV3Plus",
-        "resnet34",
-        in_channels = 3,
-        out_classes = 1
+        config["model_architecture"],
+        ENCODER,
+        in_channels = config["in_channels"],
+        out_classes = config["out_classes"],
+        learning_rate = config["learning_rate"]
     )
-    
-    CLASSES = ['tree']
-    
-    # --- prepare the data ----
+
+    # Model checkpoint callback with dynamic filename
+    model_checkpoint = ModelCheckpoint(
+        monitor="val_loss",
+        dirpath=args.output,
+        filename="{epoch:02d}-{val_loss:.2f}",
+        save_top_k=1,  
+        mode="min",  
+        save_last=True  
+        )
+      
+    # Prepare data for training dataset
     train_dataset = Dataset(
         data_dir = args.data,
         split = "train",
@@ -96,6 +127,7 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #for validation dataset
     valid_dataset = Dataset(
         data_dir = args.data,
         split = "val",
@@ -104,6 +136,7 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #for test dataset
     test_dataset = Dataset(
         data_dir = args.data,
         split = "test",
@@ -112,9 +145,10 @@ if __name__ == "__main__":
         classes = CLASSES,
     )
     
+    #dataloaders for train validation 
     train_dataloader = DataLoader(
         train_dataset,
-        batch_size = 2,
+        batch_size = config['batch_size'],
         shuffle = False,
         num_workers = 0,
         drop_last = True
@@ -122,7 +156,7 @@ if __name__ == "__main__":
     
     valid_dataloader = DataLoader(
         valid_dataset,
-        batch_size = 2,
+        batch_size = config['batch_size'],
         shuffle = False,
         num_workers = 0,
         drop_last = True
@@ -133,23 +167,19 @@ if __name__ == "__main__":
     if args.train:
         
         # callback for early stopping
-        early_stopping = pl.pytorch.callbacks.EarlyStopping(
+        early_stopping = EarlyStopping(
             "val_loss",
             patience = 10
         )
-        
-        model_checkpoint = pl.pytorch.callbacks.ModelCheckpoint(
-            monitor = "val_loss",
-            dirpath = args.model,
-            filename = "last_epoch"
-        )
-    
+		
+		# PyTorch Lightning Trainer
         trainer = pl.Trainer(
             accelerator = "gpu", # change to cpu 
-            max_epochs = 1,
-            callbacks = [early_stopping, model_checkpoint]
+            max_epochs = config["epochs"],
+            callbacks = [model_checkpoint, early_stopping]
         )
         
+        # Training the model
         trainer.fit(
             model,
             train_dataloaders = train_dataloader,
@@ -163,12 +193,12 @@ if __name__ == "__main__":
         # load previous checkpoint and evaluate
         # all test data, return the test metrics
         model = Model.load_from_checkpoint(
-            args.model + "last_epoch.ckpt"
+            args.output + "/last.ckpt"
             )
         
         test_dataloader = DataLoader(
             test_dataset,
-            batch_size = 1,
+            batch_size = config['batch_size'],
             shuffle = False,
             drop_last = True
         )

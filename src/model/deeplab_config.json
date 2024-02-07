@@ -1,0 +1,11 @@
+{
+    "model_architecture": "DeepLabV3Plus",
+    "encoder": "resnet34",
+    "encoder_weights": "imagenet",
+    "in_channels": 3,
+    "out_classes": 1,
+    "batch_size": 2,
+    "num_workers": 0,
+    "learning_rate": 0.0005,
+    "epochs": 10
+}
