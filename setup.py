@@ -13,8 +13,7 @@ setup(
     'LUCAS images',
   ],
   install_requires=[
-<<<<<<< HEAD
-=======
+
     'einops>=0.7.0',
     'torch>=1.10',
     'torchvision'
@@ -23,12 +22,10 @@ setup(
     'pytest-runner',
   ],
   tests_require=[
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
     'pytest',
     'torch==2.1.0',
     'torchvision==0.6',
     'torchaudio==2.1.0',
-<<<<<<< HEAD
     'tensorrt==8.6.1',
     'tqdm',
     'setuptools',
@@ -41,7 +38,6 @@ setup(
     'segmentation-models-pytorch',
     'pytorch-lightning==1.5.4',
     'tensorboardX'
-=======
     'tqdm',
 	'setuptools',
 	'wheel',
@@ -53,6 +49,5 @@ setup(
 	'segmentation-models-pytorch',
 	'pytorch-lightning==1.5.4',
 	'tensorboardX'
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
   ],
 )
