@@ -53,7 +53,6 @@ parser.add_argument(
         )
 
 if __name__ == "__main__":
-<<<<<<< HEAD
 	  # Parsing command line arguments
     args = parser.parse_args()
 
@@ -94,51 +93,3 @@ if __name__ == "__main__":
     visualize(f"{args.output}{os.path.basename(args.image).split('.')[0]}", original_image=original_image, predicted_mask=pred_mask, original_mask=original_mask)
 
 
-=======
-	# Parsing command line arguments
-    args = parser.parse_args()
-
-    # Model setup
-    ENCODER = 'resnet34'
-    ENCODER_WEIGHTS = 'imagenet'
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(
-        ENCODER,
-        ENCODER_WEIGHTS
-    )
-    
-    # Initializing the segmentation model
-    model = Model(
-        "DeepLabV3Plus",
-        "resnet34",
-        in_channels = 3,
-        out_classes = 1
-    )
-    
-    # Defining the classes for segmentation
-    CLASSES = ['tree']
-    
-    # load previous checkpoint and evaluate
-    # all test data, return the test metrics
-    model = Model.load_from_checkpoint(
-        args.model + "last_epoch.ckpt"
-        )
-    
-    # Setting up the PyTorch Lightning trainer
-    trainer = pl.Trainer(
-        accelerator = "gpu"
-        )
-
-    # Performing inference on the test data
-    mask = trainer.predict(
-        model,
-        dataloaders = test_dataloader,
-        verbose = False
-    )
-
-	# Visualizing the results
-    visualize(
-        image=image_vis, 
-        ground_truth_mask=gt_mask, 
-        predicted_mask=pr_mask
-    )
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad

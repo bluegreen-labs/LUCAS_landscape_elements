@@ -13,15 +13,6 @@ setup(
     'LUCAS images',
   ],
   install_requires=[
-
-    'einops>=0.7.0',
-    'torch>=1.10',
-    'torchvision'
-  ],
-  setup_requires=[
-    'pytest-runner',
-  ],
-  tests_require=[
     'pytest',
     'torch==2.1.0',
     'torchvision==0.6',
@@ -38,16 +29,5 @@ setup(
     'segmentation-models-pytorch',
     'pytorch-lightning==1.5.4',
     'tensorboardX'
-    'tqdm',
-	'setuptools',
-	'wheel',
-	'numpy',
-	'matplotlib',
-	'pandas',
-	'albumentations',
-	'imgaug',
-	'segmentation-models-pytorch',
-	'pytorch-lightning==1.5.4',
-	'tensorboardX'
   ],
 )

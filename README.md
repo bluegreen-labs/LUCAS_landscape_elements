@@ -59,30 +59,18 @@ Using the `data/prepare_data.py` script divide the data in a train, validation a
 Use the `src/train.py` script to train the model. The script requires a number of parameters, the path to the data.json file, the location where to store the model and a trigger to set it to train, i.e. "train".
 
 ```bash
-<<<<<<< HEAD
 ./train.py -d ../data/ml_data/ -m ./models/deeplab_config.json -o ../models/ --train
-=======
-./train.py -d ../data/ml_data/ -m ../models/ --train
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 ```
 The data can be tested using the "test" trigger.
 
 ```bash
-<<<<<<< HEAD
 ./train.py -d ../data/ml_data/ -m ./models/deeplab_config.json -o ../models/ --test
-=======
-./train.py -d ../data/ml_data/ -m ../models/ --test
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 ```
 
 ## Inference an image
 Use the `src/inference.py` script to inference.
 
 ```bash
-<<<<<<< HEAD
 ./inference.py -i ../data/ml_data/path_image.jpg -m ./models/deeplab_config.json -c ../models.lst.ckpt  -o ../plots/
-=======
-./inference.py -d ../data/ml_data/ -m ../models/  -s ../
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 ```
 
