@@ -212,21 +212,5 @@ class Model(pl.LightningModule):
         
         # Optionally, return any additional information you wish to track
         return {'test_loss': loss, 'test_acc': accuracy, 'test_fbeta': fbeta}
-    
-    def predict_step(self, batch, batch_idx):
-        """
-        Method to perform inference on a batch 
 
-        Parameters:
-            - batch: Input batch containing images and masks.
-            - batch_idx: Index of the batch.
-
-        Returns:
-            torch.Tensor: Predicted mask.
-        """
-        y_hat, y = self.infer_batch(batch)
-
-        activated = F.softmax(input=y_hat, dim=1)
-        predictions = torch.argmax(activated, dim=1)
-        return predictions
 
