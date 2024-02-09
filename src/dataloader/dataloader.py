@@ -44,18 +44,18 @@ class Dataset(BaseDataset):
             augmentation=None, 
             preprocessing=None,
     ):
-		"""
-		Constructor method for initializing the ImageProcessor class.
+        """
+        Constructor method for initializing the ImageProcessor class.
 
-		Parameters:
-			- data_dir (str): Path to the main image directory.
-			- split (str): Which split to process ("train", "test", "val").
-			- classes (list): Values of classes to extract from the segmentation mask.
-			- augmentation (albumentations.Compose): Data transformation pipeline
-			(e.g., flip, scale, etc.).
-			- preprocessing (albumentations.Compose): Data preprocessing
-			(e.g., normalization, shape manipulation, etc.).
-		"""
+        Parameters:
+          - data_dir (str): Path to the main image directory.
+          - split (str): Which split to process ("train", "test", "val").
+          - classes (list): Values of classes to extract from the segmentation mask.
+          - augmentation (albumentations.Compose): Data transformation pipeline
+          (e.g., flip, scale, etc.).
+          - preprocessing (albumentations.Compose): Data preprocessing
+          (e.g., normalization, shape manipulation, etc.).
+        """
         
         # read in list of files from JSON
         with open(os.path.join(data_dir,"data.json")) as f:
@@ -75,14 +75,14 @@ class Dataset(BaseDataset):
                 
         # convert str names to class values on masks
         # a single class is used in this example, but
-        # can be adjusted for multi-class purposes
+        # can be adjusted for multi-class purposes      
         self.class_values = [self.CLASSES.index(cls.lower()) for cls in classes]
-        
+
         self.augmentation = augmentation
         self.preprocessing = preprocessing
     
     def __getitem__(self, i):
-		"""
+        """
         Method to get an item from the dataset.
 
         Parameters:
@@ -91,14 +91,30 @@ class Dataset(BaseDataset):
         Returns:
             tuple: Image and corresponding mask.
         """
+        # Attempt to read the image file
+        try:
+            image = cv2.imread(self.images[i])
+            if image is None:
+                raise FileNotFoundError(f"Image file {self.images[i]} not found or is corrupted.")
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        except Exception as e:
+            print(f"Error reading image file {self.images[i]}: {e}")
+
+        # Attempt to read the mask file
+        try:
+            mask = cv2.imread(self.masks[i], 0)
+            if mask is None:
+                raise FileNotFoundError(f"Mask file {self.masks[i]} not found or is corrupted.")
+        except Exception as e:
+            print(f"Error reading mask file {self.masks[i]}: {e}")
+
+        if image.shape[:2] != mask.shape[:2]:
+            raise ValueError(f"Image and mask dimensions do not match for {self.images[i]} and {self.masks[i]}.")
         
-        # read data
-        image = cv2.imread(self.images[i])
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(self.masks[i], 0)
-        
-        # extract certain classes from mask (e.g. cars)
-        masks = [(mask == v) for v in self.class_values]
+        # extract certain classes from mask (e.g. Trees)
+        # we have to add +1 since the codes of this datasets starts with 1
+        masks = [(mask == v+1) for v in self.class_values]
+
         # check if this shouldn't be type int
         mask = np.stack(masks, axis=-1).astype('float')
         
@@ -115,7 +131,7 @@ class Dataset(BaseDataset):
         return image, mask
         
     def __len__(self):
-		"""
+        """
         Method to get the length of the dataset.
 
         Returns:
@@ -127,7 +143,7 @@ class Dataset(BaseDataset):
 
 
 def get_training_augmentation():
-	"""
+    """
     Function to get data augmentation transformations for training.
     To counter overfitting of large models some augmentation
     of the training data is required
@@ -188,7 +204,7 @@ def get_training_augmentation():
 
 
 def get_validation_augmentation():
-	"""
+    """
     Function to get data augmentation transformations for the validation split
 
     Returns:
@@ -203,9 +219,32 @@ def get_validation_augmentation():
     ]
     return albu.Compose(test_transform)
 
+def get_predict_augmentation(target_height=1200, target_width=1600):
+    """
+    Function to get data augmentation transformations for the validation split.
+
+    Parameters:
+        - target_height (int): Target height of the image.
+        - target_width (int): Target width of the image.
+
+    Returns:
+        albumentations.Compose: Data augmentation pipeline for validation.
+    """
+    
+    # Pad the image if needed to make it divisible by 32
+    test_transform = [
+        albu.PadIfNeeded(
+            min_height=((target_height // 32) + 1) * 32,
+            min_width=((target_width // 32) + 1) * 32,
+            always_apply=True
+        )
+    ]
+    return albu.Compose(test_transform)
+
+
 
 def to_tensor(x, **kwargs):
-	"""
+    """
     Convert the input array to a PyTorch tensor.
 
     Parameters:
@@ -228,7 +267,6 @@ def get_preprocessing(preprocessing_fn):
     Returns:
         albumentations.Compose: Preprocessing pipeline.
     """
-    
     # List of preprocessing transformations
     _transform = [
         # Apply the provided preprocessing function to the image

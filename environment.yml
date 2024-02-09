@@ -22,6 +22,7 @@ dependencies:
   - torchaudio
   - torchvision
   - pytorch-cuda=12.1
+  - tensorrt
 # These modules are computer vision specific
   - opencv
   - albumentations

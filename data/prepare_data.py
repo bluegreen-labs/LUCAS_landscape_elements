@@ -19,20 +19,20 @@ import numpy as np
 from PIL import Image
 
 def copy_images(df, image_path, split, out_path):
-	"""
-	Copy images specified in a DataFrame from one location to another.
+    """
+    Copy images specified in a DataFrame from one location to another.
 
-	Parameters:
-	- df: DataFrame containing image information.
-	- image_path: Path where the source images are located.
-	- split: Split criteria for organizing images in the output path
-				line train/test/val.
-	- out_path: Root path for the output destination.
+    Parameters:
+    - df: DataFrame containing image information.
+    - image_path: Path where the source images are located.
+    - split: Split criteria for organizing images in the output path
+          line train/test/val.
+    - out_path: Root path for the output destination.
 
-	Returns:
-	None
-	"""
-   for i,img in df.iterrows():
+    Returns:
+    None
+    """
+    for i,img in df.iterrows():
       # match file names
       basename = os.path.basename(img[0])
       file = os.path.splitext(basename)[0] + ".jpg"
@@ -49,21 +49,21 @@ def copy_images(df, image_path, split, out_path):
         pass
 
 def convert_classes(df, split, labels, out_path):
-	"""
-	Open mask files, relabel classes where necessary, and save them in the output directory.
+    """
+    Open mask files, relabel classes where necessary, and save them in the output directory.
 
-	Parameters:
-	- df: DataFrame containing mask file information.
-	- split: Split criteria for organizing images in the output path
-				line train/test/val.	
-	- labels: DataFrame containing label codes and corresponding new codes.
-	- out_path: Root path for the output destination.
+    Parameters:
+    - df: DataFrame containing mask file information.
+    - split: Split criteria for organizing images in the output path
+          line train/test/val.	
+    - labels: DataFrame containing label codes and corresponding new codes.
+    - out_path: Root path for the output destination.
 
-	Returns:
-	None
-	"""
+    Returns:
+    None
+    """
    
-   for i,r in df.iterrows():
+    for i,r in df.iterrows():
       
        # read in the mask data
        im = Image.open(r[0])
@@ -89,79 +89,79 @@ def convert_classes(df, split, labels, out_path):
 
 
 def getArgs():
-	"""
-	Parse command line arguments for the main routine
+    """
+    Parse command line arguments for the main routine
 
-	Returns:
-	- args: Parsed command line arguments.
-	"""
+    Returns:
+    - args: Parsed command line arguments.
+    """
 
-   parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
     description = 'Generate a ML dataset for LUCAS data',
     epilog = 'post bugs to the github repository'
-   )
-   
-   parser.add_argument(
-   '-i',
-   '--input_path',
-   type = str,
-   help = 'Input data path (top most directory)',
-   required = True
-   )
+    )
+
+    parser.add_argument(
+    '-i',
+    '--input_path',
+    type = str,
+    help = 'Input data path (top most directory)',
+    required = True
+    )
       
-   parser.add_argument(
-   '-l',
-   '--labels',
-   type = str,
-   help = 'File with label data codes in csv format',
-   required = True
-   )
-   
-   return parser.parse_args()
+    parser.add_argument(
+    '-l',
+    '--labels',
+    type = str,
+    help = 'File with label data codes in csv format',
+    required = True
+    )
+
+    return parser.parse_args()
  
 if __name__ == '__main__':
    
-   # parse arguments
-   Args = getArgs()
-   input_path = Args.input_path
-   labels = Args.labels
-   
-   # paths
-   path_to_img = os.path.join(input_path, "images")
-   path_to_masks = os.path.join(input_path, "masks")
-   
-   # images
-   images = glob.glob("{}/*.jpg".format(path_to_img))
-   masks = glob.glob("{}/*.png".format(path_to_masks))
-   
-   # labels and recode values
-   labels = pd.read_csv(labels)
-   nr_classes = len(labels['Mask code'])
+    # parse arguments
+    Args = getArgs()
+    input_path = Args.input_path
+    labels = Args.labels
 
-   # Split it in 0.6, 0.2, 0.2 (train, validation, test) -
-   # Note: The image split is not distributed or
-   # weighted by pixel coverage and an improved strategy
-   # would consider the weights of pixel representation
-   # in either training or during the train split routine
-   df = pd.DataFrame(masks)
-   df['png_file'] = df[0].transform(lambda x: os.path.basename(x))
-   df['annotation'] = df['png_file'] #.transform(lambda x: os.path.join(output_path, x))
-   df['image'] = df['png_file'].transform(lambda x: os.path.splitext(x)[0] + ".jpg")
-   df.drop(df.columns[[0,1]], axis=1, inplace=True)
+    # paths
+    path_to_img = os.path.join(input_path, "images")
+    path_to_masks = os.path.join(input_path, "masks")
 
-   train, val, test = np.split(
-    df.sample(frac=1, random_state=1),
-    [int(.6*len(df)),
-    int(.8*len(df))]
-   )
+    # images
+    images = glob.glob("{}/*.jpg".format(path_to_img))
+    masks = glob.glob("{}/*.png".format(path_to_masks))
 
-   json_data = {}
-   json_data['train'] = train.to_dict('records')
-   json_data['test'] = test.to_dict('records')
-   json_data['val'] = val.to_dict('records')
-   
-   # the json file is saved in the input data folder
-   
-   with open(os.path.join(input_path, 'data.json'), 'w') as f:
-    json.dump(json_data, f)
-   
+    # labels and recode values
+    labels = pd.read_csv(labels)
+    nr_classes = len(labels['Mask code'])
+
+    # Split it in 0.6, 0.2, 0.2 (train, validation, test) -
+    # Note: The image split is not distributed or
+    # weighted by pixel coverage and an improved strategy
+    # would consider the weights of pixel representation
+    # in either training or during the train split routine
+    df = pd.DataFrame(masks)
+    df['png_file'] = df[0].transform(lambda x: os.path.basename(x))
+    df['annotation'] = df['png_file'] #.transform(lambda x: os.path.join(output_path, x))
+    df['image'] = df['png_file'].transform(lambda x: os.path.splitext(x)[0] + ".jpg")
+    df.drop(df.columns[[0,1]], axis=1, inplace=True)
+
+    train, val, test = np.split(
+      df.sample(frac=1, random_state=1),
+      [int(.6*len(df)),
+      int(.8*len(df))]
+    )
+
+    json_data = {}
+    json_data['train'] = train.to_dict('records')
+    json_data['test'] = test.to_dict('records')
+    json_data['val'] = val.to_dict('records')
+
+    # the json file is saved in the input data folder
+
+    with open(os.path.join(input_path, 'data.json'), 'w') as f:
+      json.dump(json_data, f)
+
