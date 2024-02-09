@@ -78,12 +78,21 @@ def inference(model, images):
     return predictions
 
 # helper function for data visualization
+<<<<<<< HEAD
 def visualize(name_plot, **images):
     """
     Plot images in one row
 
     Parameters:
         **images: Keyword arguments where keys are image names and values are the images themselves
+=======
+def visualize(**images):
+	"""
+    Plot images in one row.
+
+    Parameters:
+        **images: Keyword arguments where keys are image names and values are the images themselves.
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
     """
     n = len(images)
     plt.figure(figsize=(16, 5))

@@ -62,7 +62,21 @@ parser.add_argument(
         '--model',
         help='path to the model configuration',
         required = True
+<<<<<<< HEAD
         )      
+=======
+        )
+ 
+parser.add_argument(
+        '-e',
+        '--epochs',
+        help='integer: numer of epochs',
+        type=int,
+        required = False,
+        default = 1
+        )
+        
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         
 group = parser.add_mutually_exclusive_group()
 
@@ -80,6 +94,7 @@ group.add_argument(
 
 if __name__ == "__main__":
 	
+<<<<<<< HEAD
 	  # Parsing command line arguments
     args = parser.parse_args()
 
@@ -94,6 +109,14 @@ if __name__ == "__main__":
 	  # Model setup
     ENCODER = config['encoder']
     ENCODER_WEIGHTS = config["encoder_weights"]
+=======
+	# Parsing command line arguments
+    args = parser.parse_args()
+	
+	# Model setup
+    ENCODER = 'resnet34'
+    ENCODER_WEIGHTS = 'imagenet'
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
     preprocessing_fn = smp.encoders.get_preprocessing_fn(
         ENCODER,
         ENCODER_WEIGHTS
@@ -107,6 +130,7 @@ if __name__ == "__main__":
         out_classes = config["out_classes"],
         learning_rate = config["learning_rate"]
     )
+<<<<<<< HEAD
 
     # Model checkpoint callback with dynamic filename
     model_checkpoint = ModelCheckpoint(
@@ -118,6 +142,12 @@ if __name__ == "__main__":
         save_last=True  
         )
       
+=======
+    
+    # Defining the classes for segmentation
+    CLASSES = ['tree']
+    
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
     # Prepare data for training dataset
     train_dataset = Dataset(
         data_dir = args.data,
@@ -171,12 +201,27 @@ if __name__ == "__main__":
             "val_loss",
             patience = 10
         )
+<<<<<<< HEAD
+=======
+        
+        # model checkpoint callback
+        model_checkpoint = pl.pytorch.callbacks.ModelCheckpoint(
+            monitor = "val_loss",
+            dirpath = args.model,
+            filename = "last_epoch"
+        )
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 		
 		# PyTorch Lightning Trainer
         trainer = pl.Trainer(
             accelerator = "gpu", # change to cpu 
+<<<<<<< HEAD
             max_epochs = config["epochs"],
             callbacks = [model_checkpoint, early_stopping]
+=======
+            max_epochs = args.epochs,
+            callbacks = [early_stopping, model_checkpoint]
+>>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         )
         
         # Training the model
