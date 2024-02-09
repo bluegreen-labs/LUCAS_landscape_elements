@@ -21,7 +21,6 @@ from torchmetrics import Accuracy, FBetaScore
 import lightning as pl
 
 class Model(pl.LightningModule):
-<<<<<<< HEAD
     def __init__(self, arch, encoder_name, in_channels, out_classes, learning_rate, **kwargs):
         """
         Constructor method for initializing the Model class.
@@ -33,19 +32,6 @@ class Model(pl.LightningModule):
           - out_classes: Number of output classes.
           - **kwargs: Additional keyword arguments for model creation.
         """
-=======
-    def __init__(self, arch, encoder_name, in_channels, out_classes, **kwargs):
-		"""
-		Constructor method for initializing the Model class.
-
-		Parameters:
-			- arch: Architecture of the model.
-			- encoder_name: Name of the encoder for feature extraction.
-			- in_channels: Number of input channels.
-			- out_classes: Number of output classes.
-			- **kwargs: Additional keyword arguments for model creation.
-		"""
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         super().__init__()
         self.learning_rate = learning_rate
         
@@ -91,37 +77,18 @@ class Model(pl.LightningModule):
         return self.model(x)
     
     def configure_optimizers(self):
-<<<<<<< HEAD
         """
-=======
-		"""
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         Method to configure the optimizer
         in this case an Adam optimizer with LR 0.0005
         Returns:
             torch.optim.Optimizer: Optimizer for training.
         """
-<<<<<<< HEAD
         optimizer = torch.optim.Adam(self.parameters(), lr = self.learning_rate)
         return optimizer
   
         
     def infer_batch(self, batch):
         """
-=======
-        
-        optimizer = torch.optim.Adam(self.parameters(), lr = 0.0005)
-        return optimizer
-    
-    def prepare_batch(self, batch):
-        """Prepare batch for training or evaluation: 
-        pass to a device with options."""
-        x, y = batch
-        return x,y
-        
-    def infer_batch(self, batch):
-		"""
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         Method to perform inference on a batch of data.
 
         Parameters:
@@ -151,11 +118,7 @@ class Model(pl.LightningModule):
         return y_hat, mask
 
     def training_step(self, batch, batch_idx):
-<<<<<<< HEAD
         """
-=======
-		"""
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
         Method to do the inference part of a training step and
         calculate the loss.
 
@@ -172,15 +135,9 @@ class Model(pl.LightningModule):
         return loss
     
     def validation_step(self, batch, batch_idx):
-<<<<<<< HEAD
         """
         Method to do the inference part of a validation step and
         calculate the loss and accuracy metrics.
-=======
-		"""
-        Method to do the inference part of a validation step and
-        calculate the loss.
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 
         Parameters:
             - batch: Input batch containing images and masks.
@@ -216,15 +173,9 @@ class Model(pl.LightningModule):
         return {'val_loss': loss, 'val_acc': accuracy, 'val_fbeta': fbeta}
     
     def test_step(self, batch, batch_idx):
-<<<<<<< HEAD
         """
         Method to do the inference part of a test step and
         calculate the loss and accuracy metrics.
-=======
-		"""
-        Method to do the inference part of a test step and
-        calculate the loss.
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
 
         Parameters:
             - batch: Input batch containing images and masks.
@@ -235,7 +186,6 @@ class Model(pl.LightningModule):
         """
         y_hat, y = self.infer_batch(batch)
     
-<<<<<<< HEAD
         # Apply sigmoid to model output to get probabilities
         probs = torch.sigmoid(y_hat)  # Shape: [N, 1, H, W]
         
@@ -262,20 +212,3 @@ class Model(pl.LightningModule):
         
         # Optionally, return any additional information you wish to track
         return {'test_loss': loss, 'test_acc': accuracy, 'test_fbeta': fbeta}
-
-=======
-    def predict_step(self, batch, batch_idx):
-		"""
-        Method to perform inference on a batch 
-
-        Parameters:
-            - batch: Input batch containing images and masks.
-            - batch_idx: Index of the batch.
-
-        Returns:
-            torch.Tensor: Predicted mask.
-        """
-        y_hat, y = self.infer_batch(batch)
-        return y_hat
->>>>>>> 8834f8adba0f8a6b239725f9396a2f553dc2ffad
-
