@@ -74,3 +74,4 @@ Use the `src/inference.py` script to inference.
 ./inference.py -i ../data/ml_data/path_image.jpg -m ./models/deeplab_config.json -c ../models.lst.ckpt  -o ../plots/
 ```
 
+![](https://raw.githubusercontent.com/bluegreen-labs/LUCAS_landscape_elements/main/plots/55862892N.png)
