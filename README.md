@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10639234.svg)](https://doi.org/10.5281/zenodo.10639234)
+
 # A minimal worked example using LUCAS data
 
 This is worked example using data sourced from the Land Use and Coverage Area frame Survey (LUCAS) data set, following a strict sampling and acquisition protocol. Landscape objects and elements were fully delineated on the street (eye) level landscape images and can provide critical context for land-use and land-cover assessments and comparison to satellite remote sensing data.
